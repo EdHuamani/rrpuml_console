@@ -2,10 +2,10 @@ import React, { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
 import { auth } from "../components/firebase";
-import TableAlumnos from './TableAlumnos.js';
+import TableCalificaciones from './TableCalificaciones';
 
 
-const Alumnos = () => {
+const Calificaciones = () => {
   const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ const Alumnos = () => {
   return (
     <div className="App">
       <main>
-        <TableAlumnos />
+        <TableCalificaciones />
         <div>
         </div>
       </main>
@@ -26,4 +26,4 @@ const Alumnos = () => {
   )
 }
 
-export default Alumnos;
+export default Calificaciones;

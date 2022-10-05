@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from "react";
-import Footer from '../components/Footer';
-import SidebarWithHeader from '../components/SideBar';
-import DetectHand from '../components/DetectHand';
-import Intro from './Intro.js';
+import React, { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useNavigate } from "react-router-dom";
-import { auth, db, logout } from "../components/firebase";
+import { auth } from "../components/firebase";
+import Intro from './Intro.js';
 
 
 const Home = () => {
@@ -18,18 +15,17 @@ const Home = () => {
   }, [user, loading]);
 
 
-    return (
-        <div className="App">
-        <main>
-        <SidebarWithHeader>
-          <Intro/>
-        </SidebarWithHeader>
-          <div>
-          </div>
-        </main>
-        <Footer/>
-      </div>
-    )
+  return (
+    <div className="App">
+      <main>
+        {/* <SidebarWithHeader> */}
+        <Intro />
+        {/* </SidebarWithHeader> */}
+        <div>
+        </div>
+      </main>
+    </div>
+  )
 }
 
 export default Home;

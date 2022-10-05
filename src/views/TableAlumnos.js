@@ -1,184 +1,185 @@
-import React, { useRef, useState, useEffect } from "react";
 import {
-  Flex, Image, Box,
-  Table,
-  Thead,
-  Tbody,
-  Tfoot,
-  Tr,
-  Th,
-  Td,
-  TableCaption,
-  TableContainer,
-  Text,
-  useDisclosure,
-  Button,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalCloseButton,
-  ModalBody,
-  ModalFooter,
-  FormControl,
+  Box, Button, Flex, FormControl,
   FormLabel,
-  Input,
-  Stack,
-  useColorModeValue,
-  Select
-} from '@chakra-ui/react'
-import { useAuthState } from "react-firebase-hooks/auth";
-import { useNavigate } from "react-router-dom";
-import { auth, logInWithEmailAndPassword, registerWithEmailAndPassword } from "../components/firebase";
+  Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Select, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr, useDisclosure
+} from '@chakra-ui/react';
+import React, { useEffect, useState } from "react";
+import { collection, db, editUser, onSnapshot, orderBy, query, registerWithEmailAndPassword } from "../components/firebase";
 
 
 export default function TableAlumnos() {
+  const [isEdit, setIsEdit] = useState(false);
+  const [uid, setUid] = useState({});
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [name, setName] = useState("");
-  const [user, loading, error] = useAuthState(auth);
-  const navigate = useNavigate();
+  const [lastname, setLastname] = useState("");
+  const [profile, setProfile] = useState("");
+  const [section, setSection] = useState("");
+  const [users, setUsers] = useState([]);
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const onEdit = (data) => {
+
+    setUid(data.id);
+    setEmail(data.email);
+    setLastname(data.lastname);
+    setProfile(data.profile);
+    setName(data.name);
+    setSection(data.section);
+
+    onOpen();
+    setIsEdit(true);
+  }
+  const cleanForm = () => {
+    setEmail("");
+    setLastname("");
+    setProfile("");
+    setName("");
+    setSection("");
+    setPassword("");
+  }
+  const onCloseModal = () => {
+    onClose();
+    cleanForm();
+  }
+  const onOpenCreate = () => {
+    setIsEdit(false);
+    onOpen();
+  }
   const register = () => {
     if (!name) alert("Please enter name");
-    registerWithEmailAndPassword(name, email, password);
+    if (isEdit) {
+      editUser(uid, email, name, lastname, profile, section);
+    } else {
+      registerWithEmailAndPassword(email, name, lastname, profile, section);
+    }
+    setIsEdit(false);
+
+    cleanForm();
+    onClose();
+
   };
 
-    return (
-      <>
+  const getAllUsers = async () => {
+
+    const q = await query(collection(db, "users"), orderBy("created_at", "desc"));
+    onSnapshot(q, (querySnapshot) => {
+      let allComments = [];
+      querySnapshot.forEach((doc) => {
+        allComments.push({ ...doc.data(), id: doc.id });
+
+      });
+      setUsers(allComments);
+
+    });
+  };
+
+  useEffect(() => {
+    getAllUsers();
+  }, []);
+
+  return (
+    <>
+      <Box>
+        <Text align="left" fontSize='2xl'>Alumnos</Text>
+      </Box>
+      <Box align="left" m="3">
+        <Button colorScheme='teal' onClick={onOpenCreate}>Crear alumno</Button>
+      </Box>
+      <Flex>
         <Box>
-          <Text align="left" fontSize='2xl'>Alumnos</Text>
+
+          <TableContainer>
+            <Table variant='simple' bg="white">
+              <Thead>
+                <Tr>
+                  <Th>Nombre</Th>
+                  <Th>Apellido</Th>
+                  <Th>Email</Th>
+                  <Th>Perfil</Th>
+                  <Th>Detalle</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+
+                {users.map((user) => (
+                  <Tr key={user.id}>
+                    <Td>{user.name}</Td>
+                    <Td>{user.lastname}</Td>
+                    <Td>{user.email}</Td>
+                    <Td>{user.profile}</Td>
+                    <Td><Button onClick={() => onEdit(user)}>Editar</Button></Td>
+                  </Tr>
+                ))}
+              </Tbody>
+
+            </Table>
+          </TableContainer>
         </Box>
-        <Box align="left" m="3">
-          <Button colorScheme='teal'  onClick={onOpen}>Crear alumno</Button>
-        </Box>
-        <Flex>
 
-<Box>
-<TableContainer>
-<Table variant='simple' bg="white">
-  <Thead>
-    <Tr>
-      <Th>Nombre</Th>
-      <Th>Apellido</Th>
-      <Th>Email</Th>
-      <Th>Perfil</Th>
-      <Th>Detalle</Th>
-    </Tr>
-  </Thead>
-  <Tbody>
-    <Tr>
-      <Td>Julieta</Td>
-      <Td>Perez</Td>
-      <Td>jprez@gmail.com</Td>
-      <Td>alumno</Td>
-      <Td><a href="#">editar</a></Td>
-    </Tr>
-    <Tr>
-      <Td>Mario</Td>
-      <Td>Perez</Td>
-      <Td>mario@gmail.com</Td>
-      <Td>alumno</Td>
-      <Td><a href="#">editar</a></Td>
-    </Tr>
-    <Tr>
-      <Td>Andrea</Td>
-      <Td>Perez</Td>
-      <Td>jprez@gmail.com</Td>
-      <Td>alumno</Td>
-      <Td><a href="#">editar</a></Td>
-    </Tr>
-    <Tr>
-      <Td>Rosa</Td>
-      <Td>Perez</Td>
-      <Td>jprez@gmail.com</Td>
-      <Td>alumno</Td>
-      <Td><a href="#">editar</a></Td>
-    </Tr>
-  </Tbody>
-
-</Table>
-</TableContainer>
-</Box>
-
-</Flex>
-<Modal isOpen={isOpen} onClose={onClose}>
+      </Flex>
+      <Modal isOpen={isOpen} onClose={onCloseModal}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Crear alumno</ModalHeader>
+          {isEdit &&
+            <ModalHeader>Editar alumno</ModalHeader>
+          }
+          {!isEdit &&
+            <ModalHeader>Crear alumno</ModalHeader>
+          }
           <ModalCloseButton />
           <ModalBody>
+            <FormControl>
+              <FormLabel>Nombre</FormLabel>
+              <Input type="text" value={name}
+                onChange={(e) => setName(e.target.value)} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Apellido</FormLabel>
+              <Input type="text" value={lastname}
+                onChange={(e) => setLastname(e.target.value)} />
+            </FormControl>
+            {!isEdit && <FormControl>
+              <FormLabel>Email address</FormLabel>
+              <Input type="email" value={email}
+                onChange={(e) => setEmail(e.target.value)} />
+            </FormControl>}
 
-          <Box
-            rounded={'lg'}
-            bg={useColorModeValue('white', 'gray.700')}
-            boxShadow={'lg'}
-            p={8}>
-            <Stack spacing={4}>
-            <FormControl id="email">
-                <FormLabel>Nombre</FormLabel>
-                <Input type="text"  value={name}
-          onChange={(e) => setName(e.target.value)}/>
-              </FormControl>
 
-              <FormControl id="email">
-                <FormLabel>Email address</FormLabel>
-                <Input type="email"  value={email}
-          onChange={(e) => setEmail(e.target.value)}/>
-              </FormControl>
-              <FormControl id="password">
-                <FormLabel>Password</FormLabel>
-                <Input type="password" value={password}
-          onChange={(e) => setPassword(e.target.value)} />
-              </FormControl>
-       
-              <FormControl id="ddd">
-                <FormLabel>Perfil</FormLabel>
-                <Select placeholder='Select option'>
-              <option value='option1'>Option 1</option>
-              <option value='option2'>Option 2</option>
-              <option value='option3'>Option 3</option>
-            </Select>
-              </FormControl>
+            <FormControl>
+              <FormLabel>Perfil</FormLabel>
+              <Select placeholder='Select option'
+                onChange={(e) => setProfile(e.target.value)} value={profile}>
+                <option value='alumno'>Alumno</option>
+                <option value='profesor'>Profesor</option>
+              </Select>
+            </FormControl>
 
-              <FormControl id="ddd">
-                <FormLabel>Sección</FormLabel>
-                <Select placeholder='Select option'>
-              <option value='option1'>Option 1</option>
-              <option value='option2'>Option 2</option>
-            </Select>
-              </FormControl>
-
-              <Stack spacing={10}>
-               
-                <Button
-          onClick={register}
-          bg={'blue.400'}
-                  color={'white'}
-                  _hover={{
-                    bg: 'blue.500',
-                  }}>
-                  Registar
-                </Button>
-              </Stack>
-            </Stack>
-          </Box>
+            <FormControl>
+              <FormLabel>Sección</FormLabel>
+              <Select placeholder='Select option'
+                onChange={(e) => setSection(e.target.value)}
+                value={section}
+              >
+                <option value='A14'>A14</option>
+                <option value='A15'>A15</option>
+              </Select>
+            </FormControl>
 
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme='blue' mr={3} onClick={onClose}>
-              Cerrar
+            <Button colorScheme='blue' mr={3} onClick={register}>
+              Guardar
             </Button>
-            <Button variant='ghost'>Crear</Button>
+            <Button variant='ghost' onClick={onCloseModal}>Cancelar</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-      </>
+    </>
 
 
-    )
-  }
+  )
+}

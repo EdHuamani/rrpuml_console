@@ -1,46 +1,36 @@
 import {
-  Avatar,
-  Box, BoxProps, CloseButton, Drawer,
-  DrawerContent, Flex, FlexProps, HStack, Icon, IconButton, Image, Link, Menu,
+  Box, CloseButton, Drawer,
+  DrawerContent, Flex, HStack, Icon, IconButton, Image, Menu,
   MenuButton,
   MenuDivider,
   MenuItem,
   MenuList, Text, useColorModeValue, useDisclosure, VStack
 } from '@chakra-ui/react';
-import React, { ReactNode, ReactText, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { IconType } from 'react-icons';
 import {
   FiBell,
-  FiChevronDown, FiCompass, FiHome, FiMenu, FiSettings, FiTrendingUp
+  FiChevronDown, FiCompass, FiEdit3, FiHome, FiMenu, FiMessageSquare, FiTrendingUp, FiUser, FiUsers, FiVideo
 } from 'react-icons/fi';
 import { useSelector } from 'react-redux';
-import { useNavigate } from "react-router-dom";
+import { Link as RouteLink, Outlet, useNavigate } from "react-router-dom";
 import { auth, logout } from "../components/firebase";
 
 
-
-interface LinkItemProps {
-  name: string;
-  icon: IconType;
-}
-const LinkItems: Array<LinkItemProps> = [
+const LinkItems = [
   { name: 'Inicio', icon: FiHome, path: '/', allowAccess: ['alumno', 'profesor'] },
-  { name: 'Reconocimiento', icon: FiTrendingUp, path: '/reconocimiento', allowAccess: ['alumno', 'profesor'] },
-  { name: 'Historial', icon: FiCompass, path: '/historial', allowAccess: ['alumno', 'profesor'] },
-  { name: 'Mis calificaciones', icon: FiSettings, allowAccess: ['alumno', 'profesor'] },
-  { name: 'Mis alumnos', icon: FiSettings, path: '/alumnos', allowAccess: ['profesor'] },
-  { name: 'Comentarios', icon: FiSettings, path: '/comentarios', allowAccess: ['alumno', 'profesor'] },
+  { name: 'Reconocimiento', icon: FiVideo, path: '/reconocimiento', allowAccess: ['alumno', 'profesor'] },
+  { name: 'Historial', icon: FiCompass, path: '/historial', allowAccess: ['profesor'] },
+  { name: 'Mis calificaciones', icon: FiEdit3, path: '/mis-calificaciones', allowAccess: ['alumno'] },
+  { name: 'Aprender seña', icon: FiTrendingUp, path: '/aprender', allowAccess: ['alumno'] },
+  { name: 'Mis alumnos', icon: FiUsers, path: '/alumnos', allowAccess: ['profesor'] },
+  { name: 'Comentarios', icon: FiMessageSquare, path: '/comentarios', allowAccess: ['alumno', 'profesor'] },
   // { name: 'Cerrar sesión', icon: FiSettings },
 ];
 
 // var getLinks = LinkItems.filter((p) => p.allowAccess.includes('alumno'));
 
-export default function SidebarWithHeader({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function Layout() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   // const [name, setName] = useState("");
   // const [profile, setProfile] = useState("");
@@ -51,25 +41,9 @@ export default function SidebarWithHeader({
   const currentUser = useSelector((state) => state.current);
 
 
-  // console.log(`ed -----------------> ${JSON.stringify(currentUser.current)}`);
-  // const fetchUserName = async () => {
-  //   try {
-  //     const q = query(collection(db, "users"), where("uid", "==", user?.uid));
-  //     const doc = await getDocs(q);
-  //     const data = doc.docs[0].data();
-  //     console.log('user', data);
-  //     setName(data.name);
-  //     setProfile(data.profile);
-  //   } catch (err) {
-  //     console.error(err);
-  //     // alert("An error occured while fetching user data");
-  //   }
-  // };
-
   useEffect(() => {
     if (loading) return;
     if (!user) return navigate("/login");
-    // fetchUserName();
   }, [user, loading]);
 
 
@@ -93,21 +67,17 @@ export default function SidebarWithHeader({
         </DrawerContent>
       </Drawer>
       {/* mobilenav */}
-      <MobileNav onOpen={onOpen} name={currentUser.name} />
+      <MobileNav onOpen={onOpen} name={currentUser.name} profile={currentUser.profile} />
       <Box ml={{ base: 0, md: 60 }} p="4">
-        {children}
+        {/* {children} */}
+        <Outlet />
       </Box>
     </Box>
   );
 }
 
-interface SidebarProps extends BoxProps {
-  onClose: () => void;
-  name: () => string;
-  profile: String,
-}
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+const SidebarContent = ({ onClose, ...rest }) => {
   return (
     <Box
       transition="3s ease"
@@ -127,22 +97,13 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
           {link.name}
         </NavItem>
       ))}
-      {/* {LinkItems.filter((p) => p.allowAccess.includes(rest.profile)).map((link) => (
-        <NavItem key={link.name} icon={link.icon} path={link.path}>
-          {link.name}
-        </NavItem>
-      ))} */}
     </Box>
   );
 };
 
-interface NavItemProps extends FlexProps {
-  icon: IconType;
-  children: ReactText;
-}
-const NavItem = ({ icon, path, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, path, children, ...rest }) => {
   return (
-    <Link href={path} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
+    <RouteLink to={path} style={{ textDecoration: 'none' }} _focus={{ boxShadow: 'none' }}>
       <Flex
         align="center"
         p="4"
@@ -167,15 +128,10 @@ const NavItem = ({ icon, path, children, ...rest }: NavItemProps) => {
         )}
         {children}
       </Flex>
-    </Link>
+    </RouteLink>
   );
 };
-
-interface MobileProps extends FlexProps {
-  onOpen: () => void;
-  name: () => string;
-}
-const MobileNav = ({ onOpen, name, ...rest }: MobileProps) => {
+const MobileNav = ({ onOpen, name, profile, ...rest }) => {
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
@@ -225,12 +181,13 @@ const MobileNav = ({ onOpen, name, ...rest }: MobileProps) => {
               transition="all 0.3s"
               _focus={{ boxShadow: 'none' }}>
               <HStack>
-                <Avatar
+                {/* <Avatar
                   size={'sm'}
                   src={
                     'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
                   }
-                />
+                /> */}
+                <Icon as={FiUser} h={7} w={7} alignSelf={'center'} />
                 <VStack
                   display={{ base: 'none', md: 'flex' }}
                   alignItems="flex-start"
@@ -238,7 +195,7 @@ const MobileNav = ({ onOpen, name, ...rest }: MobileProps) => {
                   ml="2">
                   <Text fontSize="sm">{name}</Text>
                   <Text fontSize="xs" color="gray.600">
-                    Admin
+                    {profile}
                   </Text>
                 </VStack>
                 <Box display={{ base: 'none', md: 'flex' }}>

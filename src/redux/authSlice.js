@@ -1,17 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-
 const initialState = {
     loading: false,
     user: {},
     userToken: null,
     error: null,
-    isLogin: false
+    isLogin: false,
+    currentuser: {},
 }
 
 const setSession = (accessToken, refreshToken) => {
-    if (accessToken && refreshToken){
+    if (accessToken && refreshToken) {
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
@@ -24,60 +24,69 @@ const setSession = (accessToken, refreshToken) => {
 
 
 const userSlice = createSlice({
-  name: "user",
-  initialState,
-  reducers: {
-    starLoading(state){
-        state.loading = true;
-    },
-    stopLoading(state){
-        state.loading = false;
-    },
-    getInitialState(state, action){
-        state.loading = false;
-        state.isLogin = action.payload.isLogin;
-    },
-    loginSucess(state, action){
-        state.loading = false;
-        state.isLogin = true;
-        state.accessToken = action.payload.accessToken;
-        state.refreshToken = action.payload.refrestate.refreshToken;
-        state.currentuser = action.payload.refrestate.currentuser;
-    },
-    logoutUser(state){
-        state.isLogin = false;
-        state.currentuser = null;
+    name: "user",
+    initialState,
+    reducers: {
+        starLoading(state) {
+            state.loading = true;
+        },
+        stopLoading(state) {
+            state.loading = false;
+        },
+        getInitialState(state, action) {
+            state.loading = false;
+            state.isLogin = action.payload.isLogin;
+        },
+        loginSucess(state, action) {
+            state.loading = false;
+            state.isLogin = true;
+            state.accessToken = action.payload.accessToken;
+            state.refreshToken = action.payload.refrestate.refreshToken;
+            state.currentuser = action.payload.refrestate.currentuser;
+        },
+        // userData(state, action) {
+        //     state.loading = false;
+        //     state.isLogin = true;
+        //     state.currentuser = action.payload.currentuser;
+        //     console.log('DEBUG 2 =====> ', JSON.stringify(state));
+        // },
+        // userData(state) => state.currentUser = action.payload,
+        logoutUser(state) {
+            state.isLogin = false;
+            state.currentuser = null;
+        },
     }
-  }
 })
 
 
-
-
-export function login({email, password}){
+export function login({ email, password }) {
 
     return async dispatch => {
         dispatch(userSlice.actions.starLoading);
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/token/', {
+            const response = await axios.post('http://localhost:55021/api/token/', {
                 username: email,
                 password
             });
-            const {refresh, access} = response.data;
+            const { refresh, access } = response.data;
             setSession(refresh, access);
             dispatch(userSlice.actions.stopLoading);
             dispatch(userSlice.actions.loginSucess({
-                currentUser: {email},
+                currentUser: { email },
                 accessToken: access,
                 refreshToken: refresh
             }))
 
-        } catch (error){
+        } catch (error) {
             console.log(error);
             dispatch(userSlice.actions.stopLoading);
         }
     }
 }
+// export const { onUserStateChanged } = userSlice.actions;
+// selectors
+export const selectUser = (state) => state.currentuser;
+// export const selectCount = (state: RootState) => state.counter.value;
 
 
 export default userSlice.reducer;
