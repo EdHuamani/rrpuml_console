@@ -9,6 +9,7 @@ const Aprender = () => {
   const [user, loading, error] = useAuthState(auth);
   const [alphabet, setAlphabet] = useState('A');
   const [number, setNumber] = useState('1');
+  const [word, setWord] = useState('Yo');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const Aprender = () => {
                   </RadioGroup>
 
                 </GridItem>
-                <GridItem colStart={4} colEnd={6} h='10' bg='papayawhip' >
+                <GridItem colStart={4} colEnd={6} h='10'  >
                   <Box boxSize='sm'>
                     <Image src={`/assets/alphabet/${alphabet}.jpg`} />
                   </Box>
@@ -78,7 +79,7 @@ const Aprender = () => {
                   </RadioGroup>
 
                 </GridItem>
-                <GridItem colStart={4} colEnd={6} h='10' bg='papayawhip' >
+                <GridItem colStart={4} colEnd={6} h='10'  >
                   <Box boxSize='sm'>
                     <Image src={`/assets/numbers/${number}.jpg`} />
                   </Box>
@@ -89,21 +90,38 @@ const Aprender = () => {
 
               <Grid templateColumns='repeat(5, 1fr)' gap={4}>
                 <GridItem colSpan={2} h='10' >
-                  <RadioGroup defaultValue='1'>
+                  <RadioGroup defaultValue='Yo'
+                    onChange={
+                      function (value) {
+                        setWord(value)
+                      }
+                    }
+                  >
 
                     <Stack spacing={5}>
-                      {['Hola', 'Hasta luego'].map((num) => (
-                        <Radio colorScheme='green' value={num}>
-                          {num}
+                      {[
+                        { "id": "Yo", "name": "Yo", },
+                        { "id": "Tu", "name": "Tú", },
+                        { "id": "Mio", "name": "Mío", },
+                        { "id": "Hombre", "name": "Hombre", },
+                        { "id": "Mujer", "name": "Mujer", },
+                        { "id": "Quien", "name": "¿Quién?", },
+                        { "id": "Peru", "name": "Perú", },
+                        { "id": "Casa", "name": "Casa", },
+                        { "id": "Nombre", "name": "Nombre", },
+                        { "id": "Amigo", "name": "Amigo" },
+                      ].map((num) => (
+                        <Radio colorScheme='green' value={num.id}>
+                          {num.name}
                         </Radio>
                       ))}
                     </Stack>
                   </RadioGroup>
 
                 </GridItem>
-                <GridItem colStart={4} colEnd={6} h='10' bg='papayawhip' >
+                <GridItem colStart={4} colEnd={6} h='10' >
                   <Box boxSize='sm'>
-                    <Image src='https://bit.ly/dan-abramov' alt='Dan Abramov' />
+                    <Image src={`/assets/words/${word}.png`} />
                   </Box>
                 </GridItem>
               </Grid>

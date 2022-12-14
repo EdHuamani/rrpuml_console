@@ -5,8 +5,8 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.0.10",
     "@chakra-ui/react": "^2.2.8",
-    "@emotion/react": "^11.10.0",
-    "@emotion/styled": "^11.10.0",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@reduxjs/toolkit": "^1.8.5",
     "@tensorflow-models/handpose": "^0.0.7",
     "@tensorflow/tfjs": "^3.20.0",
@@ -15,6 +15,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
+    "chakra-dayzed-datepicker": "^0.2.5",
     "fingerpose": "^0.1.0",
     "firebase": "^9.9.4",
     "form-data": "^4.0.0",

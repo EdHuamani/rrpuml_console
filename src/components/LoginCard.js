@@ -1,10 +1,10 @@
 import {
   Box, Button, Checkbox, Flex, FormControl,
-  FormLabel, Heading, Input, Link, Stack, useColorModeValue
+  FormLabel, Heading, Input, Stack, useColorModeValue
 } from '@chakra-ui/react';
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { auth, logInWithEmailAndPassword } from "../components/firebase";
 
 
@@ -56,7 +56,7 @@ export default function SimpleCard() {
                 align={'start'}
                 justify={'space-between'}>
                 <Checkbox>Remember me</Checkbox>
-                <Link color={'blue.400'}>Forgot password?</Link>
+                <Link style={{ "color": "blue.400" }} to="/forgot-password">¿Olvidaste tu contraseña?</Link>
               </Stack>
               <Button
                 onClick={() => logInWithEmailAndPassword(email, password)}

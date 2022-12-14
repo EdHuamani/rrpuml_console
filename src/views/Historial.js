@@ -1,7 +1,7 @@
 import {
-    Box, Flex, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr
+    Box, Flex, Select, Spacer, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr
 } from '@chakra-ui/react';
-import { doc, getDoc, where } from 'firebase/firestore';
+import { doc, getDoc, getDocs, where } from 'firebase/firestore';
 import React, { useEffect, useState } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Link, useNavigate } from "react-router-dom";
@@ -43,9 +43,36 @@ const Historial = () => {
 
 function TableHistorial(props) {
     const [users, setUsers] = useState([]);
+    const [data, setData] = useState([]);
+    const [section, setSection] = useState('');
+    const [sections, setSections] = useState([]);
 
+    const getData = () => {
+        return section === "" ? data : users;
+    }
+
+    const setSectionData = async (value) => {
+        console.log("--->", value);
+        setSection(value);
+        setUsers([]);
+        const filterData = data.filter((item) => {
+            return item.section === value;
+        });
+        setUsers(filterData);
+
+    }
 
     useEffect(() => {
+        const qs = query(collection(db, "sections"));
+        let sects = [];
+        getDocs(qs).then((onSnapshot) => {
+            onSnapshot.forEach((doc) => {
+                sects.push(doc.data()['name']);
+            })
+        }).finally(() => {
+            setSections(sects);
+        });
+
         const q = query(
             collection(db, "users"),
             where('section', '==', props.section),
@@ -59,7 +86,7 @@ function TableHistorial(props) {
                 allComments.push({ ...doc.data(), id: doc.id });
 
             });
-            setUsers(allComments);
+            setData(allComments);
 
         });
 
@@ -70,6 +97,15 @@ function TableHistorial(props) {
         <>
             <Box>
                 <Text align="left" fontSize='2xl'>Historial</Text>
+            </Box>
+            <Box w="200px" bg="white" mb={4}>
+                <Select placeholder='Ver todos'
+                    onChange={(e) => setSectionData(e.target.value)}
+                    value={section}
+                >
+
+                    {sections.map((e) => (<option key={e} value={e}>{e}</option>))}
+                </Select>
             </Box>
             <Flex>
                 <Box>
@@ -87,13 +123,14 @@ function TableHistorial(props) {
                             </Thead>
                             <Tbody>
 
-                                {users.map((user) => (
+                                {getData().map((user) => (
                                     <Tr key={user.id}>
                                         <Td>{user.section}</Td>
                                         <Td>{user.name}</Td>
                                         <Td>{user.lastname}</Td>
                                         <Td>{user.email}</Td>
-                                        <Td><Link to={`/calificaciones/${user.id}`} >ver</Link></Td>
+                                        <Td><Link to={`/calificaciones/${user.id}`} >ver historial</Link>
+                                        </Td>
                                     </Tr>
                                 ))}
                             </Tbody>

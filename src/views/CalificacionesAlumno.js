@@ -1,8 +1,8 @@
-import { Box, Flex, Table, TableContainer, Tbody, Td, Th, Thead, Tr } from "@chakra-ui/react";
+import { Box, Flex, Table, TableContainer, Tbody, Td, Text, Th, Thead, Tr } from "@chakra-ui/react";
 import { doc, getDoc, onSnapshot, orderBy, where } from "firebase/firestore";
 import moment from "moment";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { collection, db, query } from "../components/firebase";
 
 
@@ -47,34 +47,44 @@ const Calificaciones = () => {
 
         <Flex>
           <Box>
-            Calificaciones del alumno: {user}
-
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb="4">
+              <Text>Calificaciones del alumno: {user}</Text>
+              <Box>
+                <Link to={`/calificaciones-chart/${params.uid}`} ><Text px="4" py="2" rounded={8} bg="green" color="white">Ver Avance</Text></Link>
+              </Box>
+            </Box>
             <TableContainer>
               <Table variant='simple' bg="white">
                 <Thead>
                   <Tr>
                     <Th>Fecha</Th>
-                    <Th>Tiempo</Th>
-                    <Th>Señas Correctas</Th>
+                    <Th>Hora</Th>
+                    <Th>Tipo Seña</Th>
+                    <Th>Máxima Precisión Sesión</Th>
+                    <Th>Máxima Precisión histórica</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
 
                   {items.map((user) => (
                     <Tr key={user.id}>
-                      <Td>{moment(user.created_at).format("DD/MM/YYYY HH:mm")}</Td>
-                      <Td>{
+                      <Td>{moment(user.created_at).format("DD/MM/YYYY")}</Td>
+                      <Td>{moment(user.created_at).format("HH:mm")}</Td>
+                      {/* <Td>{
                         moment.duration(moment(user.end_date).diff(moment(user.start_date))).minutes()
-                      }"</Td>
-                      <Td>{user.detections_length}</Td>
+                      }"</Td> */}
+                      <Td>{user.detections[0]}</Td>
+                      <Td>{(user.max * 100).toFixed(0)}%</Td>
+                      <Td>{(user.max_history * 100).toFixed(0)}%</Td>
                     </Tr>
                   ))}
                 </Tbody>
 
               </Table>
             </TableContainer>
-          </Box>
 
+
+          </Box>
         </Flex>
       </main>
     </div>

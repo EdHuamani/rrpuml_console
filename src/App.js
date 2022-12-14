@@ -10,8 +10,10 @@ import Alumnos from './views/Alumnos';
 import Aprender from './views/Aprender';
 import Calificaciones from './views/Calificaciones';
 import CalificacionesAlumno from './views/CalificacionesAlumno';
+import CalificacionesAlumnoChart from './views/CalificacionesAlumnoChart';
 import Comentarios from './views/Comentarios';
 import CommentDetail from './views/CommentDetail';
+import ForgotPassword from "./views/ForgotPassword";
 import Historial from './views/Historial';
 import Home from "./views/Home";
 import Login from "./views/Login";
@@ -54,8 +56,10 @@ function App() {
           <Route name="mis-calificaciones" path='/mis-calificaciones' exact element={<Calificaciones />} />
           <Route name="aprender" path='/aprender' exact element={<Aprender />} />
           <Route name="calificaciones" path='/calificaciones/:uid' exact element={<CalificacionesAlumno />} />
+          <Route name="calificaciones-chart" path='/calificaciones-chart/:uid' exact element={<CalificacionesAlumnoChart />} />
 
         </Route>
+        <Route name="Recuperar" path='/forgot-password' exact element={<ForgotPassword />} />
         <Route name="login" path='/login' exact element={<Login />} />
 
 

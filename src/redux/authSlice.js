@@ -64,7 +64,7 @@ export function login({ email, password }) {
     return async dispatch => {
         dispatch(userSlice.actions.starLoading);
         try {
-            const response = await axios.post('http://localhost:55021/api/token/', {
+            const response = await axios.post('https://api-wiiwtnrtuq-uc.a.run.app//api/token/', {
                 username: email,
                 password
             });

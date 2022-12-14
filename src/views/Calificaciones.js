@@ -19,8 +19,6 @@ const Calificaciones = () => {
     <div className="App">
       <main>
         <TableCalificaciones />
-        <div>
-        </div>
       </main>
     </div>
   )
