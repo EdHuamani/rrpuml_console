@@ -20,7 +20,7 @@ import { drawHand } from "./utilities";
 ///////// NEW STUFF IMPORTS
 ///////// NEW STUFF IMPORTS
 
-import { addDoc, collection, getDocs, limit, query, serverTimestamp, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, limit, query, serverTimestamp, setDoc, where } from "firebase/firestore";
 import { useSelector } from "react-redux";
 import { db } from "./firebase";
 
@@ -192,8 +192,10 @@ function DetectHand() {
       await addDoc(collection(db, `detections`), data);
       // update ranking
       if (ranking < maxSession) {
-        console.log('updating ranking');
-        await setDoc(docRef, { max: maxSession, word: word, created_at: created_at });
+        var d = { max: maxSession, word: word };
+        var ref = doc(db, "ranking", currentUser.uid, 'ranking', word);
+        console.log('updating ranking', d);
+        await setDoc(ref, d, { merge: true });
       }
 
       alert("Progreso guardado, correctamente");
